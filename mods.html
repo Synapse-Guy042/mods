@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Synapse Mods Marketplace</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #0e0f12, #1a1b1f);
+    color: #e6eef6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: moveBackground 30s linear infinite;
+    z-index: 0;
+  }
+  @keyframes moveBackground { from {transform: translate(0,0);} to {transform: translate(50px,50px);} }
+
+  header {
+    padding: 80px 20px 100px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  header h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #08f, #f39c12, #08f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientText 5s infinite linear;
+  }
+
+  @keyframes gradientText { 0%{background-position:0%;} 100%{background-position:200%;} }
+
+  header p {
+    font-size: 1.3rem;
+    color: #aaa;
+    margin-top: 15px;
+    opacity: 0;
+    animation: fadeInUp 1s forwards 0.5s;
+  }
+
+  section {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .counter {
+    background: rgba(30,30,40,0.7);
+    border-radius: 20px;
+    padding: 30px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(8,143,255,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .counter:hover { transform: translateY(-10px); box-shadow: 0 0 50px rgba(243,156,18,0.7); }
+
+  .counter h2 { font-size: 3rem; margin-bottom: 15px; color: #fff; }
+  .counter p { font-size: 1rem; color: #bbb; margin-bottom: 20px; }
+
+  .progress-bar { width: 100%; height: 18px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #08f, #f39c12); border-radius: 10px 0 0 10px; transition: width 0.5s ease; }
+  .lag-fill { background: linear-gradient(90deg, #f39c12, #e74c3c); }
+
+  /* Mod Cards */
+  .mods-grid {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    z-index: 1;
+    position: relative;
+  }
+
+  .mod-card {
+    background: rgba(30,30,40,0.8);
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 20px;
+    width: 260px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(8,143,255,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .mod-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 40px rgba(243,156,18,0.5);
+  }
+
+  .mod-card h3 { color: #fff; margin-bottom: 10px; }
+  .mod-card p { color: #bbb; font-size: 0.9rem; margin-bottom: 15px; }
+
+  .install-btn {
+    background: linear-gradient(90deg, #08f, #f39c12);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  .install-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(243,156,18,0.6); }
+
+  .home-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(90deg, #08f, #f39c12);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(8,143,255,0.4);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  .home-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(243,156,18,0.7); }
+
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<header class="fade-in">
+  <h1>Welcome to the Synapse Mods Marketplace!</h1>
+  <p>Enhance your Synapse Softworks Browser with community-driven mods.</p>
+</header>
+
+<section>
+  <div class="counter fade-in">
+    <h2 id="mods">0</h2>
+    <p>Mods Available</p>
+    <div class="progress-bar"><div id="mods-bar" class="progress-fill"></div></div>
+  </div>
+
+  <div class="counter fade-in">
+    <h2 id="downloads">0</h2>
+    <p>Total Mods Installed</p>
+    <div class="progress-bar"><div id="downloads-bar" class="progress-fill lag-fill"></div></div>
+  </div>
+</section>
+
+<div class="mods-grid fade-in">
+  <div class="mod-card">
+    <h3>🛡️ Ad-Blocker</h3>
+    <p>Removes ads and tracking scripts for a cleaner browsing experience.</p>
+    <button class="install-btn" onclick="installMod('adblock.js')">Install</button>
+  </div>
+
+  <div class="mod-card">
+    <h3>🌈 Rainbow Theme</h3>
+    <p>Turns your Synapse UI into a beautiful pulsing rainbow gradient.</p>
+    <button class="install-btn" onclick="installMod('rainbow-theme.js')">Install</button>
+  </div>
+</div>
+
+<button class="home-btn" onclick="goHome()">← Back to Browser</button>
+
+<script>
+  function animateValue(obj, start, end, duration) {
+    let startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      const progress = ts - startTime;
+      const value = Math.round(start + (end - start) * (progress / duration));
+      obj.textContent = value;
+      if (progress < duration) requestAnimationFrame(step);
+      else obj.textContent = end;
+    }
+    requestAnimationFrame(step);
+  }
+
+  function animateBar(bar, start, end, duration) {
+    let startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      const progress = ts - startTime;
+      const width = start + (end - start) * (progress / duration);
+      bar.style.width = Math.min(width, 100) + '%';
+      if (progress < duration) requestAnimationFrame(step);
+      else bar.style.width = end + '%';
+    }
+    requestAnimationFrame(step);
+  }
+
+  async function loadStats() {
+    const res = await window.electron.invoke('load-mods');
+    const count = res.ok ? res.mods.length : 2;
+    animateBar(document.getElementById('mods-bar'), 0, Math.min(count * 10, 100), 1200);
+    animateValue(document.getElementById('mods'), 0, count, 1200);
+
+    const installed = parseInt(localStorage.getItem('installedMods') || '0');
+    animateBar(document.getElementById('downloads-bar'), 0, Math.min(installed * 10, 100), 1200);
+    animateValue(document.getElementById('downloads'), 0, installed, 1200);
+  }
+
+  async function installMod(name) {
+    const fs = require('fs');
+    const path = require('path');
+    const modsDir = path.join(__dirname, '../mods');
+    if (!fs.existsSync(modsDir)) fs.mkdirSync(modsDir);
+    const src = path.join(__dirname, 'market', name);
+    const dest = path.join(modsDir, name);
+    fs.copyFileSync(src, dest);
+    let installed = parseInt(localStorage.getItem('installedMods') || '0');
+    localStorage.setItem('installedMods', installed + 1);
+    alert(`✅ ${name.replace('.js','')} installed!`);
+  }
+
+  function goHome() {
+    window.electron.send('redirect-to-url', `file://${__dirname}/index.html`);
+  }
+
+  window.addEventListener('DOMContentLoaded', loadStats);
+</script>
+
+</body>
+</html>
